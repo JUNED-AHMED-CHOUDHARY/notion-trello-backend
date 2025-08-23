@@ -1,13 +1,17 @@
 {
-    "compilerOptions": {
-      "rootDirs": ["src"],
-      "outDir": "dist",
-      "lib": ["es2020"],
-      "target": "es2020",
-      "module": "Node16",
-      "moduleResolution": "Node16",
-      "esModuleInterop": true,
-      "types": ["node"]
-    },
-    "include": ["src"]
-  }
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": ".build",
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".build"]
+}
