@@ -14,4 +14,7 @@ app.get("/", (req: Request, res: Response) => {
   return res.send("It's asfasf 🙌");
 });
 
+const a = 3;
+console.log(a, "asfhoiasfohi");
+
 app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
