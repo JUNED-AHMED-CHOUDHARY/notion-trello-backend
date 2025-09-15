@@ -15,5 +15,92 @@ datasource db {
 
 
 model Users {
-  id BigInt @default(autoincrement()) @unique
+  id BigInt @id @default(autoincrement())
+  name String @db.VarChar(60)
+  email String @unique @db.VarChar(256)
+  password String? @db.VarChar(256)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  meta Json
+}
+
+model Workspaces {
+  id BigInt @id @default(autoincrement())
+  name String @db.VarChar(60)
+  meta Json
+  owner_user_id BigInt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+model Users_workspaces {
+  id BigInt @id @default(autoincrement())
+  workspace_id BigInt
+  user_id BigInt
+  joined_at DateTime @default(now())
+  @@unique([workspace_id, user_id])
+}
+
+model Files {
+  id BigInt @id @default(autoincrement())
+  name String @db.VarChar(60)
+  workspace_id BigInt
+  parent_id BigInt?
+  meta Json
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt 
+}
+
+model Notion_files {
+  id BigInt @id @default(autoincrement())
+  name String @db.VarChar(60)
+  content String @db.Text
+  file_id BigInt // this id represents Files table id 
+  meta Json
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt 
+}
+
+enum Files_logs_type {
+  NOTION
+  KANBAN
+}
+
+model Files_logs { // will contain logs of notion and trello files
+  id BigInt @id @default(autoincrement())
+  user_id BigInt
+  file_id BigInt // this id represents Notion_files or Trello_files table
+  meta Json
+  type Files_logs_type // this tells us that file_id is whether notion or trello table id
+  created_at DateTime @default(now())
+}
+model Kanban_boards {
+    id BigInt @id @default(autoincrement())
+    name String @db.VarChar(60)
+    background_img String?
+    file_id BigInt // this id represents Files table id 
+    meta Json
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model Kanban_sections {
+    id BigInt @id @default(autoincrement())
+    name String @db.VarChar(60)
+    kanban_board_id BigInt // this id represents Kanban_boards table id 
+    meta Json
+    index Int @db.SmallInt
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+model Kanban_fields {
+    id BigInt @id @default(autoincrement())
+    name String @db.VarChar(60)
+    title String
+    description String? @db.Text
+    is_completed Boolean @default(false)
+    kanban_section_id BigInt // this id represents Kanban_sections table id 
+    meta Json
+    index Int @db.SmallInt
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
