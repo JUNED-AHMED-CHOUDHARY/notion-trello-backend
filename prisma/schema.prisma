@@ -13,83 +13,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Users {
-  id BigInt @id @default(autoincrement())
-  name String @db.VarChar(60)
-  email String @unique @db.VarChar(256)
-  password String? @db.VarChar(256)
+  id         BigInt   @id @default(autoincrement())
+  name       String   @db.VarChar(60)
+  email      String   @unique @db.VarChar(256)
+  password   String?  @db.VarChar(256)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  meta Json
+  meta       Json
 
   owned_workspaces Workspaces[]
   users_workspaces Users_workspaces[]
 
   file_logs Files_logs[]
+
+  accounts Account[]
+}
+
+model Account {
+  id                      BigInt       @id @default(autoincrement())
+  user_id                 BigInt
+  provider                ProviderEnum
+  provider_account_id     String       @db.VarChar(256)
+  access_token            String?      @db.VarChar(2000)
+  refresh_token           String?      @db.VarChar(2000)
+  access_token_expires_at DateTime?
+  created_at              DateTime     @default(now())
+  updated_at              DateTime     @updatedAt
+
+  // relation
+  user Users @relation(fields: [user_id], references: [id])
+
+  // uniqueness..
+  @@unique([provider, provider_account_id])
+  // indexing..
+  @@index([provider_account_id], name: "providerAccountId")
+  @@index([provider], name: "providerId")
+  @@index([user_id], name: "userId")
 }
 
 model Workspaces {
-  id BigInt @id @default(autoincrement())
-  name String @db.VarChar(60)
-  meta Json
+  id            BigInt   @id @default(autoincrement())
+  name          String   @db.VarChar(60)
+  meta          Json
   owner_user_id BigInt
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  owner Users @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+  owner            Users              @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
   users_workspaces Users_workspaces[]
-  files Files[]
+  files            Files[]
 }
 
 model Users_workspaces {
-  id BigInt @id @default(autoincrement())
+  id           BigInt   @id @default(autoincrement())
   workspace_id BigInt
-  user_id BigInt
-  joined_at DateTime @default(now())
+  user_id      BigInt
+  joined_at    DateTime @default(now())
 
-  users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  users      Users      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   workspaces Workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-
 
   @@unique([workspace_id, user_id])
 }
 
-
 model Files {
-  id BigInt @id @default(autoincrement())
-  name String @db.VarChar(60)
+  id           BigInt   @id @default(autoincrement())
+  name         String   @db.VarChar(60)
   workspace_id BigInt
-  parent_id BigInt?
-  meta Json
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
+  parent_id    BigInt?
+  meta         Json
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   workspace Workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   // self one to many 
-  parent_file Files? @relation("fileHeirarchy", fields: [parent_id], references: [id], onDelete: Cascade)
+  parent_file Files?  @relation("fileHeirarchy", fields: [parent_id], references: [id], onDelete: Cascade)
   child_files Files[] @relation("fileHeirarchy")
 
   // notion, kanban_board one to one relation
-  notion_file Notion_files?
+  notion_file  Notion_files?
   kanban_board Kanban_boards?
 }
 
 model Notion_files {
-  id BigInt @id @default(autoincrement())
-  name String @db.VarChar(60)
-  content String @db.Text
-  file_id BigInt @unique // this id represents Files table id 
-  meta Json
+  id         BigInt   @id @default(autoincrement())
+  name       String   @db.VarChar(60)
+  content    String   @db.Text
+  file_id    BigInt   @unique // this id represents Files table id 
+  meta       Json
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
+  updated_at DateTime @updatedAt
 
   // on-to-one with Files
   file_belong_to Files @relation(fields: [file_id], references: [id], onDelete: Cascade)
 
   // 
   file_logs Files_logs[]
+}
+
+enum ProviderEnum {
+  GITHUB @map("github")
 }
 
 enum Files_logs_type {
@@ -103,84 +128,83 @@ enum Files_logs_action_type {
   DELETE
 }
 
-model Files_logs { // will contain logs of notion and trello files
-  id BigInt @id @default(autoincrement())
-  user_id BigInt
-  file_id BigInt // this id represents Notion_files or Trello_files table
-  meta Json
-  type Files_logs_type // this tells us that file_id is whether notion or trello table id
-  created_at DateTime @default(now())
+model Files_logs {
+  id          BigInt                 @id @default(autoincrement())
+  user_id     BigInt
+  file_id     BigInt // this id represents Notion_files or Trello_files table
+  meta        Json
+  type        Files_logs_type // this tells us that file_id is whether notion or trello table id
+  created_at  DateTime               @default(now())
   action_type Files_logs_action_type @default(UPDATE)
 
   kanban_section_id BigInt?
-  kanban_field_id BigInt?
-  content String
+  kanban_field_id   BigInt?
+  content           String
 
   // 
-  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user                   Users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   //
-  notion_file_belong_to Notion_files? @relation(fields: [file_id], references: [id], onDelete: Cascade, map: "files_logs_notion_fkey")
+  notion_file_belong_to  Notion_files?  @relation(fields: [file_id], references: [id], onDelete: Cascade, map: "files_logs_notion_fkey")
   kanban_board_belong_to Kanban_boards? @relation(fields: [file_id], references: [id], onDelete: Cascade, map: "files_logs_kanban_fkey")
 
   // 
   kanban_section_belong_to Kanban_sections? @relation(fields: [kanban_section_id], references: [id], onDelete: Cascade)
-  kanban_field_belong_to Kanban_fields? @relation(fields: [kanban_field_id], references: [id], onDelete: Cascade)
+  kanban_field_belong_to   Kanban_fields?   @relation(fields: [kanban_field_id], references: [id], onDelete: Cascade)
 }
 
-
 model Kanban_boards {
-    id BigInt @id @default(autoincrement())
-    name String @db.VarChar(60)
-    background_img String?
-    file_id BigInt @unique // this id represents Files table id 
-    meta Json
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+  id             BigInt   @id @default(autoincrement())
+  name           String   @db.VarChar(60)
+  background_img String?
+  file_id        BigInt   @unique // this id represents Files table id 
+  meta           Json
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-    // on-to-one with Files
-    file_belong_to Files @relation(fields: [file_id], references: [id], onDelete: Cascade)
+  // on-to-one with Files
+  file_belong_to Files @relation(fields: [file_id], references: [id], onDelete: Cascade)
 
-    // one kanban_board can have multiple kanban_sections.
-    kanban_sections Kanban_sections[]
+  // one kanban_board can have multiple kanban_sections.
+  kanban_sections Kanban_sections[]
 
-    //
-    file_logs Files_logs[]
+  //
+  file_logs Files_logs[]
 }
 
 model Kanban_sections {
-    id BigInt @id @default(autoincrement())
-    name String @db.VarChar(60)
-    kanban_board_id BigInt // this id represents Kanban_boards table id 
-    meta Json
-    index Int @db.SmallInt
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+  id              BigInt   @id @default(autoincrement())
+  name            String   @db.VarChar(60)
+  kanban_board_id BigInt // this id represents Kanban_boards table id 
+  meta            Json
+  index           Int      @db.SmallInt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-    // one kanban_board can have multiple kanban_sections.
-    kanban_board_belong_to Kanban_boards @relation(fields: [kanban_board_id], references: [id], onDelete: Cascade)
+  // one kanban_board can have multiple kanban_sections.
+  kanban_board_belong_to Kanban_boards @relation(fields: [kanban_board_id], references: [id], onDelete: Cascade)
 
-    // one kanban_section can have multiple kanban_fields.
-    kanban_fields Kanban_fields[]
+  // one kanban_section can have multiple kanban_fields.
+  kanban_fields Kanban_fields[]
 
-    // logs.
-    file_logs Files_logs[]
+  // logs.
+  file_logs Files_logs[]
 }
 
 model Kanban_fields {
-    id BigInt @id @default(autoincrement())
-    name String @db.VarChar(60)
-    title String
-    description String? @db.Text
-    is_completed Boolean @default(false)
-    kanban_section_id BigInt // this id represents Kanban_sections table id 
-    meta Json
-    index Int @db.SmallInt
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+  id                BigInt   @id @default(autoincrement())
+  name              String   @db.VarChar(60)
+  title             String
+  description       String?  @db.Text
+  is_completed      Boolean  @default(false)
+  kanban_section_id BigInt // this id represents Kanban_sections table id 
+  meta              Json
+  index             Int      @db.SmallInt
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-    // one kanban_section can have multiple kanban_fields.
-    kanban_section_belong_to Kanban_sections @relation(fields: [kanban_section_id], references: [id], onDelete: Cascade)
+  // one kanban_section can have multiple kanban_fields.
+  kanban_section_belong_to Kanban_sections @relation(fields: [kanban_section_id], references: [id], onDelete: Cascade)
 
-    // 
-    file_logs Files_logs[]
+  // 
+  file_logs Files_logs[]
 }
