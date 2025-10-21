@@ -4,13 +4,13 @@ const config: any = {
   local: {
     slack: {
       [ALERTS.ALERT_TESTING]:
-        "https://hooks.slack.com/services/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",
+        `https://hooks.slack.com/services/${process.env.SLACK_ALERT_SUFFIX}`,
     },
   },
   production: {
     slack: {
       [ALERTS.ALERT_TESTING]:
-        "https://hooks.slack.com/services/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",
+        `https://hooks.slack.com/services/${process.env.SLACK_ALERT_SUFFIX}`,
     },
   },
 };
