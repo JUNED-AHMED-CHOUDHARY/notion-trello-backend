@@ -43,7 +43,7 @@ class BullMqSetup {
   public createWorker(queueName: string, processor: any) {
     return new Worker(queueName, processor, {
       connection: DefaultRedisConnection,
-      prefix: processor.env.NODE_ENV,
+      prefix: process.env.NODE_ENV,
     });
   }
 

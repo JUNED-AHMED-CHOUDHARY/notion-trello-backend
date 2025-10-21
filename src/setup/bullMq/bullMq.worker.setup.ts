@@ -1,7 +1,8 @@
 import type { Job } from "bullmq";
 import BullMqSetup from "./bullMq.setup.js";
+import testingWorker from "../../bullMqWorkers/testing.js";
 
-const workers: any[] = [];
+const workers: any[] = [testingWorker];
 
 class BullMqWorker<
   DataType = any,

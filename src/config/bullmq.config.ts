@@ -20,7 +20,7 @@ export const defaultQueueOptions: DefaultJobOptions = {
   backoff: {
     type: "exponential",
     delay: 1000,
-    jitter: 500,
+    jitter: 0.5,
   },
   removeOnFail: {
     count: 100,
