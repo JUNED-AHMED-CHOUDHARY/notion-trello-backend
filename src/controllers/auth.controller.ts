@@ -2,7 +2,7 @@ import { type Request, type Response } from "express";
 import { Prisma } from "@prisma/client";
 import { createUser, findUniqueUser } from "../dbServices/users.service.js";
 import { createAccount, updateAccount } from "../dbServices/account.service.js";
-import { prisma } from "../config/prisma.setup.js";
+import { prisma } from "../setup/prisma.setup.js";
 
 export const oAuthLoginSignUp = async (req: Request, res: Response) => {
   try {

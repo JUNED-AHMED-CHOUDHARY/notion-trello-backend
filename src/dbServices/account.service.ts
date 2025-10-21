@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { prisma } from "../config/prisma.setup.js";
+import { prisma } from "../setup/prisma.setup.js";
 
 export const createAccount = async (
   payload: Prisma.AccountCreateInput,

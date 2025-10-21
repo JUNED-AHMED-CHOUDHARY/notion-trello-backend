@@ -1,5 +1,5 @@
 import type { Prisma, Users } from "@prisma/client";
-import { prisma } from "../config/prisma.setup.js";
+import { prisma } from "../setup/prisma.setup.js";
 
 // overloads it...
 export function createUser(payload: Prisma.UsersCreateInput): Promise<Users>;

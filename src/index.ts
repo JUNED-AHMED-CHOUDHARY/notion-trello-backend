@@ -8,6 +8,9 @@ import {
   bigIntToStringConverter,
   stringToBigIntConverter,
 } from "./middlewares/bigInt.middlewares.js";
+
+import "./setup/bullMq/bullMq.worker.setup.js";
+
 const app: Application = express();
 const PORT = process.env.PORT || 7000;
 
@@ -23,9 +26,6 @@ app.use(bigIntToStringConverter);
 app.get("/", (req: Request, res: Response) => {
   return res.send("It's asfasf 🙌");
 });
-
-const a = 3;
-console.log(a, "asfhoiasfohi");
 
 // all routes..
 app.use(indexRoutes);
