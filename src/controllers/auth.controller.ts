@@ -3,6 +3,8 @@ import { Prisma } from "@prisma/client";
 import { createUser, findUniqueUser } from "../dbServices/users.service.js";
 import { createAccount, updateAccount } from "../dbServices/account.service.js";
 import { prisma } from "../setup/prisma.setup.js";
+import type { JwtPayload } from "jsonwebtoken";
+import { generateJWTToken } from "../utility/controller.utility.js";
 
 export const oAuthLoginSignUp = async (req: Request, res: Response) => {
   try {
@@ -77,9 +79,8 @@ export const oAuthLoginSignUp = async (req: Request, res: Response) => {
       },
     );
 
-    // TODO :-
     // jwt send..
-    //
+    // TODO :-
     // new user send welcome mail..
 
     return res.status(newAccount ? 201 : 200).json({
@@ -93,6 +94,25 @@ export const oAuthLoginSignUp = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(error.status || 500).json({
       message: error.message || error,
+    });
+  }
+};
+
+export const getToken = async (req: Request, res: Response) => {
+  try {
+    const { email, name } = req.body;
+
+    const jwtPayload: JwtPayload = { email, name };
+
+    const token = generateJWTToken(jwtPayload);
+
+    return res.json({
+      message: "Got token successfully",
+      token,
+    });
+  } catch (error: any) {
+    return res.status(error.status || 500).json({
+      message: error.message || "Error while generating token",
     });
   }
 };

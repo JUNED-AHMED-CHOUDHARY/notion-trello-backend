@@ -1,3 +1,4 @@
+import { createServer } from "http";
 import express from "express";
 import type { Application, Request, Response } from "express";
 import "dotenv/config";
@@ -10,10 +11,19 @@ import {
 } from "./middlewares/bigInt.middlewares.js";
 
 import "./setup/bullMq/bullMq.worker.setup.js";
+import SocketIndexSetup from "./setup/socketService/Socket.index.setup.js";
+import { registerSocketEvents } from "./setup/socketService/Socket.eventHandler.js";
 
 const app: Application = express();
 const PORT = process.env.PORT || 7000;
 
+const httpServer = createServer(app);
+
+SocketIndexSetup.initialize(httpServer)
+  .then(() => {
+    registerSocketEvents();
+  })
+  .catch((err) => console.log("sacket err", err));
 // * Middleware
 app.use(cors());
 // app.use(express.json());
@@ -30,6 +40,6 @@ app.get("/", (req: Request, res: Response) => {
 // all routes..
 app.use(indexRoutes);
 
-app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
 
 // /auth/oauth
