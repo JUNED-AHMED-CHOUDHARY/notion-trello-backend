@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Users {
-  id         BigInt   @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   name       String   @db.VarChar(60)
   email      String   @unique @db.VarChar(256)
   password   String?  @db.VarChar(256)
@@ -31,8 +31,8 @@ model Users {
 }
 
 model Account {
-  id                      BigInt       @id @default(autoincrement())
-  user_id                 BigInt
+  id                      Int       @id @default(autoincrement())
+  user_id                 Int
   provider                ProviderEnum
   provider_account_id     String       @db.VarChar(256)
   access_token            String?      @db.VarChar(2000)
@@ -53,10 +53,10 @@ model Account {
 }
 
 model Workspaces {
-  id            BigInt   @id @default(autoincrement())
+  id            Int   @id @default(autoincrement())
   name          String   @db.VarChar(60)
   meta          Json
-  owner_user_id BigInt
+  owner_user_id Int
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -66,9 +66,9 @@ model Workspaces {
 }
 
 model Users_workspaces {
-  id           BigInt   @id @default(autoincrement())
-  workspace_id BigInt
-  user_id      BigInt
+  id           Int   @id @default(autoincrement())
+  workspace_id Int
+  user_id      Int
   joined_at    DateTime @default(now())
 
   users      Users      @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -80,10 +80,10 @@ model Users_workspaces {
 }
 
 model Files {
-  id           BigInt   @id @default(autoincrement())
+  id           Int   @id @default(autoincrement())
   name         String   @db.VarChar(60)
-  workspace_id BigInt
-  parent_id    BigInt?
+  workspace_id Int
+  parent_id    Int?
   meta         Json
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
@@ -100,10 +100,10 @@ model Files {
 }
 
 model Notion_files {
-  id         BigInt   @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   name       String   @db.VarChar(60)
   content    String   @db.Text
-  file_id    BigInt   @unique // this id represents Files table id 
+  file_id    Int   @unique // this id represents Files table id 
   meta       Json
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -131,16 +131,16 @@ enum Files_logs_action_type {
 }
 
 model Files_logs {
-  id          BigInt                 @id @default(autoincrement())
-  user_id     BigInt
-  file_id     BigInt // this id represents Notion_files or Trello_files table
+  id          Int                 @id @default(autoincrement())
+  user_id     Int
+  file_id     Int // this id represents Notion_files or Trello_files table
   meta        Json
   type        Files_logs_type // this tells us that file_id is whether notion or trello table id
   created_at  DateTime               @default(now())
   action_type Files_logs_action_type @default(UPDATE)
 
-  kanban_section_id BigInt?
-  kanban_field_id   BigInt?
+  kanban_section_id Int?
+  kanban_field_id   Int?
   content           String
 
   // 
@@ -155,10 +155,10 @@ model Files_logs {
 }
 
 model Kanban_boards {
-  id             BigInt   @id @default(autoincrement())
+  id             Int   @id @default(autoincrement())
   name           String   @db.VarChar(60)
   background_img String?
-  file_id        BigInt   @unique // this id represents Files table id 
+  file_id        Int   @unique // this id represents Files table id 
   meta           Json
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
@@ -174,9 +174,9 @@ model Kanban_boards {
 }
 
 model Kanban_sections {
-  id              BigInt   @id @default(autoincrement())
+  id              Int   @id @default(autoincrement())
   name            String   @db.VarChar(60)
-  kanban_board_id BigInt // this id represents Kanban_boards table id 
+  kanban_board_id Int // this id represents Kanban_boards table id 
   meta            Json
   index           Int      @db.SmallInt
   created_at      DateTime @default(now())
@@ -193,12 +193,12 @@ model Kanban_sections {
 }
 
 model Kanban_fields {
-  id                BigInt   @id @default(autoincrement())
+  id                Int   @id @default(autoincrement())
   name              String   @db.VarChar(60)
   title             String
   description       String?  @db.Text
   is_completed      Boolean  @default(false)
-  kanban_section_id BigInt // this id represents Kanban_sections table id 
+  kanban_section_id Int // this id represents Kanban_sections table id 
   meta              Json
   index             Int      @db.SmallInt
   created_at        DateTime @default(now())
