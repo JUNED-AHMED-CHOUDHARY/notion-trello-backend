@@ -1,16 +1,31 @@
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/decodeToken.middleware.js";
+import { prisma } from "../setup/prisma.setup.js";
 
-export const getAllWorkspaces = async (
-  req: AuthenticatedRequest,
-  res: Response,
-) => {
+export const getAllWorkspaces = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const user = req.user;
-    console.log(user);
+    const { userId } = req.user;
 
-    return res.status(201).json({
+    const workspaces = await prisma.users_workspaces.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        joined_at: true,
+        workspaces: {
+          select: {
+            id: true,
+            name: true,
+            owner_user_id: true,
+            created_at: true,
+          },
+        },
+      },
+    });
+    console.log(workspaces, "asfiafioafio");
+    return res.json({
       success: true,
+      data: workspaces,
     });
   } catch (error: any) {
     return res.status(error?.status || 500).json({

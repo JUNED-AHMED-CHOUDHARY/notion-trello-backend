@@ -1,14 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import { decodeJWTToken } from "../utility/controller.utility.js";
+import { getUserIdFromCacheFromEmail } from "../dbServices/users.service.js";
 
 export interface AuthenticatedRequest<T = any> extends Request {
   user?: T;
 }
-export const decodeAccessToken = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const decodeAccessToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const authorization = req.headers.authorization;
     if (!authorization)
@@ -33,7 +30,9 @@ export const decodeAccessToken = async (
         message: "Unauthorized",
       });
 
-    req.user = user;
+    const userId = await getUserIdFromCacheFromEmail(user?.email);
+
+    req.user = { ...user, userId };
 
     next();
   } catch (error: any) {
