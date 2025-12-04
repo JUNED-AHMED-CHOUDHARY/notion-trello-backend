@@ -75,6 +75,8 @@ model Users_workspaces {
   workspaces Workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 
   @@unique([workspace_id, user_id])
+
+  @@index([user_id])
 }
 
 model Files {
