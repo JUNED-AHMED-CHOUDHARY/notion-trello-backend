@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { getAllWorkspaces } from "../controllers/workspace.controller.js";
+import { createWorkspace, getAllWorkspaces } from "../controllers/workspace.controller.js";
 
 const workspaceRoutes = Router();
 
+workspaceRoutes.post("/", createWorkspace);
 workspaceRoutes.get("/", getAllWorkspaces);
-// workspaceRoutes.post("/", getAllWorkspaces);
 
 export default workspaceRoutes;

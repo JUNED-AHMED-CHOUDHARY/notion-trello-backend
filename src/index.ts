@@ -5,10 +5,6 @@ import "dotenv/config";
 import cors from "cors";
 // routes.
 import indexRoutes from "./routes/indexRoutes.js";
-import {
-  bigIntToStringConverter,
-  stringToBigIntConverter,
-} from "./middlewares/bigInt.middlewares.js";
 
 import "./setup/bullMq/bullMq.worker.setup.js";
 import SocketIndexSetup from "./setup/socketService/Socket.index.setup.js";
@@ -23,16 +19,13 @@ SocketIndexSetup.initialize(httpServer)
   .then(() => {
     registerSocketEvents();
   })
-  .catch((err) => console.log("sacket err", err));
+  .catch(err => console.log("sacket err", err));
 // * Middleware
 app.use(cors());
-// app.use(express.json());
-
-app.use(stringToBigIntConverter);
+app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
 
-app.use(bigIntToStringConverter);
 app.get("/", (req: Request, res: Response) => {
   return res.send("It's asfasf 🙌");
 });
