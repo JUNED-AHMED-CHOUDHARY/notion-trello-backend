@@ -41,9 +41,9 @@ export async function findUniqueUser(
   });
 }
 
-export const getUserIdFromCacheFromEmail = async (email: string): Promise<bigint | undefined> => {
+export const getUserIdFromCacheFromEmail = async (email: string): Promise<number | undefined> => {
   const key = `${userEmailToIdsPrefix}:${email}`;
-  const cacheData = (await getDataFromRedis(key)) as bigint;
+  const cacheData = (await getDataFromRedis(key)) as number;
   if (cacheData) return cacheData;
 
   const user = await prisma.users.findUnique({
