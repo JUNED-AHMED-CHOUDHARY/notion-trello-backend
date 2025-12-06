@@ -66,14 +66,30 @@ export const getAllWorkspaces = async (req: AuthenticatedRequest, res: Response)
             name: true,
             owner_user_id: true,
             created_at: true,
+            owner: {
+              select: {
+                email: true,
+              },
+            },
           },
         },
       },
     });
 
+    const formattedWorkspaces = workspaces.reduce((formattedRes, workspace) => {
+      const obj = {
+        joined_at: workspace.joined_at,
+        owner_email: workspace.workspaces.owner.email,
+        name: workspace.workspaces.name,
+        created_at: workspace.workspaces.created_at,
+      };
+      formattedRes.push(obj);
+      return formattedRes;
+    }, [] as any);
+
     return res.json({
       success: true,
-      data: workspaces,
+      data: formattedWorkspaces,
     });
   } catch (error: any) {
     return res.status(error?.status || 500).json({
