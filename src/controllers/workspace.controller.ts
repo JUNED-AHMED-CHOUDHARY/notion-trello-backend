@@ -82,6 +82,7 @@ export const getAllWorkspaces = async (req: AuthenticatedRequest, res: Response)
         owner_email: workspace.workspaces.owner.email,
         name: workspace.workspaces.name,
         created_at: workspace.workspaces.created_at,
+        id: workspace.workspaces.id,
       };
       formattedRes.push(obj);
       return formattedRes;
