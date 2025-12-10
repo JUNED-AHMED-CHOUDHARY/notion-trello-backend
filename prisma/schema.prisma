@@ -95,7 +95,7 @@ model Files {
   child_files Files[] @relation("fileHeirarchy")
 
   // notion, kanban_board one to one relation
-  notion_file  Notion_files?
+  notion_file  Notion_files[]
   kanban_board Kanban_boards?
 }
 
@@ -103,7 +103,7 @@ model Notion_files {
   id         Int   @id @default(autoincrement())
   name       String   @db.VarChar(60)
   content    String   @db.Text
-  file_id    Int   @unique // this id represents Files table id 
+  file_id    Int
   meta       Json
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
