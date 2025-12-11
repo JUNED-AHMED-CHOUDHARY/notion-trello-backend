@@ -5,10 +5,12 @@ import "dotenv/config";
 import cors from "cors";
 // routes.
 import indexRoutes from "./routes/indexRoutes.js";
-
-import "./setup/bullMq/bullMq.worker.setup.js";
+// setups.
 import SocketIndexSetup from "./setup/socketService/Socket.index.setup.js";
 import { registerSocketEvents } from "./setup/socketService/Socket.eventHandler.js";
+// seperate runners.
+import "./setup/bullMq/bullMq.worker.setup.js";
+import "./utility/neon.keepAlive.js";
 
 const app: Application = express();
 const PORT = process.env.PORT || 7000;
