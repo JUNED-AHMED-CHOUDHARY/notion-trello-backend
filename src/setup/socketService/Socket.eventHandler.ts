@@ -28,7 +28,7 @@ const handlers: any[] = [
 ];
 
 // Auth middleware - validates JWT token for all connections
-const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
+const authMiddleware = async (socket: Socket, next: (err?: Error) => void) => {
   try {
     const token = socket.handshake.auth.token;
 
@@ -37,7 +37,7 @@ const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
     }
 
     // Verify JWT token
-    const decoded = decodeJWTToken(token);
+    const decoded = await decodeJWTToken(token);
 
     // Attach user info to socket for later use
     (socket as any).user = decoded;
