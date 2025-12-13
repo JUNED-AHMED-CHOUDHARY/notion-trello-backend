@@ -9,26 +9,23 @@ const handlers: any[] = [
       console.log("handler: client connected (server-side)");
 
       // Example: listen for a custom event named 'hello'
-      socket.on("hello", (payload) => {
+      socket.on("hello", payload => {
         console.log("received hello:", payload);
         socket.emit("hello_response", { ok: true, echo: payload });
       });
 
-      socket.on("join_room", (payload) => {
+      socket.on("join_room", payload => {
         console.log("karu kya iska ??", payload);
       });
 
       // If you want a one-time log of the authenticated user:
-      console.log(
-        "Authenticated user on server (if any):",
-        (socket as any).user,
-      );
+      console.log("Authenticated user on server (if any):", (socket as any).user);
     },
   },
 ];
 
 // Auth middleware - validates JWT token for all connections
-const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
+const authMiddleware = async (socket: Socket, next: (err?: Error) => void) => {
   try {
     const token = socket.handshake.auth.token;
 
@@ -37,14 +34,12 @@ const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
     }
 
     // Verify JWT token
-    const decoded = decodeJWTToken(token);
+    const decoded = await decodeJWTToken(token);
 
     // Attach user info to socket for later use
     (socket as any).user = decoded;
 
-    console.log(
-      `Authenticated user: ${(decoded as any).userId || (decoded as any).id}`,
-    );
+    console.log(`Authenticated user: ${(decoded as any).userId || (decoded as any).id}`);
     next();
   } catch (error: any) {
     console.error("Socket authentication failed:", error.message);
@@ -57,11 +52,7 @@ class SocketEventHandlers {
   private nameSpace: string;
   private nsp: Namespace;
 
-  public constructor(
-    nameSpace: string,
-    handler: (socket: Socket) => void,
-    skipAuth: boolean = false,
-  ) {
+  public constructor(nameSpace: string, handler: (socket: Socket) => void, skipAuth: boolean = false) {
     this.nameSpace = nameSpace;
     this.io = SocketIndexSetup.getIo();
 
@@ -83,14 +74,11 @@ class SocketEventHandlers {
         handler(socket);
       } catch (error: any) {
         console.log(`Error in connection handler: ${error.message}`);
-        socket.emit(
-          "server_error",
-          "An error occurred during connection setup.",
-        );
+        socket.emit("server_error", "An error occurred during connection setup.");
       }
 
       // Add common disconnect logic
-      socket.on("disconnect", (reason) => {
+      socket.on("disconnect", reason => {
         console.log(`Socket disconnected: ${socket.id}. Reason: ${reason}`);
       });
     });
@@ -110,7 +98,5 @@ class SocketEventHandlers {
 }
 
 export function registerSocketEvents() {
-  handlers.map(
-    (handler) => new SocketEventHandlers(handler.nameSpace, handler.handler),
-  );
+  handlers.map(handler => new SocketEventHandlers(handler.nameSpace, handler.handler));
 }
