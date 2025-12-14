@@ -1,26 +1,12 @@
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/decodeToken.middleware.js";
-import { prisma } from "../setup/prisma.setup.js";
+import fileServices from "../dbServices/file.services.js";
 
 export const getAllFiles = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const workspaceId = Number(req.params.workspaceId);
 
-    const data = await prisma.files.findMany({
-      where: {
-        workspace_id: workspaceId,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-      include: {
-        kanban_board: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+    const data = await fileServices.getAllFilesWithMinimumData(workspaceId);
 
     return res.json({
       success: true,
