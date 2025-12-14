@@ -63,3 +63,41 @@ export const getAllWorkspaces = async (req: AuthenticatedRequest, res: Response)
     });
   }
 };
+
+export const getWorkspace = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const workspaceId = Number(req.params.workspaceId);
+
+    const workspace = await workspaceServices.getWorkspaceById(workspaceId);
+
+    return res.json({
+      message: "Workspace fetched Successfully",
+      data: workspace,
+    });
+  } catch (error: any) {
+    return res.status(error?.status || 500).json({
+      success: false,
+      message: error?.message || "Something went wrong",
+      error: error?.response || error,
+    });
+  }
+};
+
+export const updateWorkspace = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const workspaceId = Number(req.params.workspaceId);
+
+    const updatedWorkspace = await workspaceServices.updateWorkspaceById(workspaceId, req.body);
+
+    return res.json({
+      message: "Workspace fetched Successfully",
+      data: updatedWorkspace,
+    });
+  } catch (error: any) {
+    return res.status(error?.status || 500).json({
+      success: false,
+      message: error?.message || "Something went wrong",
+      error: error?.response || error,
+    });
+  }
+};
