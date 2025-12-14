@@ -48,19 +48,13 @@ export const decodeAccessToken = async (req: AuthenticatedRequest, res: Response
 export const userWorkspaceAccessMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.user;
+    const workspaceId = Number(req.params.workspaceId);
 
-    const { workspaceId } = req.query;
-    if (!workspaceId) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing workspaceId in query",
-      });
-    }
     const entryFound = !!(await prisma.users_workspaces.findUnique({
       where: {
         workspace_id_user_id: {
           user_id: userId,
-          workspace_id: Number(workspaceId),
+          workspace_id: workspaceId,
         },
       },
       select: {

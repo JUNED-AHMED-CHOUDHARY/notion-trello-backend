@@ -1,10 +1,10 @@
-import type { NextFunction, Response } from "express";
+import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/decodeToken.middleware.js";
 import { prisma } from "../setup/prisma.setup.js";
 
-export const getAllFiles = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getAllFiles = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const workspaceId = Number(req.query.workspaceId);
+    const workspaceId = Number(req.params.workspaceId);
 
     const data = await prisma.files.findMany({
       where: {
@@ -16,10 +16,10 @@ export const getAllFiles = async (req: AuthenticatedRequest, res: Response, next
       include: {
         kanban_board: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
 
     return res.json({
@@ -36,7 +36,7 @@ export const getAllFiles = async (req: AuthenticatedRequest, res: Response, next
   }
 };
 
-export const getFileData = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getFileData = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const fileId = Number(req.params.fileId);
     if (!fileId) {
@@ -46,8 +46,7 @@ export const getFileData = async (req: AuthenticatedRequest, res: Response, next
       });
     }
 
-    // const file = await prisma.file 
-
+    // const file = await prisma.file
   } catch (error) {
     return res.json({
       success: true,
