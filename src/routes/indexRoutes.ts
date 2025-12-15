@@ -1,11 +1,12 @@
 import { Router } from "express";
 import authRoutes from "./authRoutes.js";
 import workspaceRoutes from "./workspaceRoutes.js";
-import { decodeAccessToken, userWorkspaceAccessMiddleware } from "../middlewares/decodeToken.middleware.js";
+import { decodeAccessToken } from "../middlewares/decodeToken.middleware.js";
 import filesRoutes from "./filesRoutes.js";
 import kanbanRoutes from "./kanbanRoutes.js";
 import { zodValidationMiddleWare } from "../middlewares/ZodValidationMiddleware.js";
 import { workspaceIdInParamsValidation } from "../validations/schemaValidations/common.js";
+import { userWorkspaceAccessMiddleware } from "../middlewares/workspaceMiddleware.js";
 
 const router = Router();
 

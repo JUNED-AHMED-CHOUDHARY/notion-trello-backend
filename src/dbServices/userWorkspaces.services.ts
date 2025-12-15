@@ -24,8 +24,23 @@ const getAllUserWorkspacesWithMinimumData = async (userId: number) => {
   });
 };
 
+const doesUserHaveAccessInWorkspace = async (userId: number, workspaceId: number) => {
+  return await prisma.users_workspaces.findUnique({
+    where: {
+      workspace_id_user_id: {
+        user_id: userId,
+        workspace_id: workspaceId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+};
+
 const userWorkspaceServices = {
   getAllUserWorkspacesWithMinimumData,
+  doesUserHaveAccessInWorkspace,
 };
 
 export default userWorkspaceServices;
