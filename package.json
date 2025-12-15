@@ -11,6 +11,9 @@
     "migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "lint-staged": {
     "*.{js,ts}": [
       "eslint --fix",

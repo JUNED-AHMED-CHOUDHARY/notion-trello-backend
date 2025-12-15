@@ -5,30 +5,32 @@ import { getUserIdFromCacheFromEmail } from "../dbServices/users.service.js";
 export interface AuthenticatedRequest<T = any> extends Request {
   user?: T;
 }
+
+const returnUnAuthhorized = (res: Response) => {
+  return res.status(401).json({
+    success: false,
+    message: "Unauthorized",
+  });
+};
+
 export const decodeAccessToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const authorization = req.headers.authorization;
-    if (!authorization)
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+    if (!authorization) {
+      return returnUnAuthhorized(res);
+    }
 
     const token = authorization?.replace("Bearer ", "");
 
-    if (!token)
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+    if (!token) {
+      return returnUnAuthhorized(res);
+    }
 
     const user = await decodeJWTToken(token);
 
-    if (!user)
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+    if (!user) {
+      return returnUnAuthhorized(res);
+    }
 
     const userId = await getUserIdFromCacheFromEmail(user?.email);
 
